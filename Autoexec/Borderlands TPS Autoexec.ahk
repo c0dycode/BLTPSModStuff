@@ -47,6 +47,7 @@ else
 }
 
 RunAutoexec:
+Sleep, 2000
 WinActivate, ahk_class LaunchUnrealUWindowsClient
 WinWaitActive, ahk_class LaunchUnrealUWindowsClient
 WinShow, ahk_class LaunchUnrealUWindowsClient

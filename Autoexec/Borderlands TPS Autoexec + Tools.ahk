@@ -58,6 +58,7 @@ else
 }
 
 RunAutoexec:
+Sleep, 2000
 WinActivate, ahk_class LaunchUnrealUWindowsClient
 WinWaitActive, ahk_class LaunchUnrealUWindowsClient
 WinShow, ahk_class LaunchUnrealUWindowsClient
@@ -100,13 +101,11 @@ F8::
 ;~ DllCall("Sleep",UInt,200)
 CheckConsole()
 Sleep, 150
-IfEqual, ConsoleStatus, 0
-    {
-        IfEqual, ConsoleKey, Tilde
-            Send, ~
-        else
-            Send, {F6}
-    }
+If conresult IN 0x0,0xFFFFFFFF
+    IfEqual, ConsoleKey, Tilde
+        Send, ~
+    else
+        Send, {F6}
 DllCall("Sleep",UInt,100)
 SendRaw getall WillowPopulationDefinition Name
 Send {Enter}
@@ -121,13 +120,11 @@ WinWaitActive, ahk_class LaunchUnrealUWindowsClient
 Sleep, 150
 CheckConsole()
 Sleep, 150
-IfEqual, ConsoleStatus, 0
-    {
-        IfEqual, ConsoleKey, Tilde
-            Send, ~
-        else
-            Send, {F6}
-    }
+If conresult IN 0x0,0xFFFFFFFF
+    IfEqual, ConsoleKey, Tilde
+        Send, ~
+    else
+        Send, {F6}
 Sleep, 150
 SendRaw obj dump
 Send {Space}
@@ -188,6 +185,9 @@ if !isObject(mem)
 if !hProcessCopy
     msgbox failed to open a handle. Error Code = %hProcessCopy%
     
-global ConsoleStatus := mem.read(mem.BaseAddress + 0x01CC3590, "UInt", 0x58, 0x00, 0x8C)
-}
+pattern := mem.hexStringToPattern("?? ?? ?? ?? 18 50 14 23 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? 00 24")
+SetFormat, IntegerFast, H
+consolestatusaddress := mem.processPatternScan(mem.BaseAddress,, pattern*)
 
+global conresult := mem.read(consolestatusaddress + 0x1C, type := "UInt")
+}
